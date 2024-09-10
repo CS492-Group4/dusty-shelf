@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from pymongo import MongoClient
 
-# MongoDB Connection
+# MongoDB connection
 client = MongoClient("mongodb+srv://mongodbstudent1:t4aK6RZdC4QE3eM4@cluster0.6cclx.mongodb.net/")
 db = client["DustyShelf"]
 books_collection = db["books"]
@@ -12,7 +12,8 @@ def add_book(request):
     author = request.GET.get('author')
     price = float(request.GET.get('price'))
     quantity = int(request.GET.get('quantity'))
-    
+
+    # Prepare the book document
     book = {
         "title": name,
         "author": author,

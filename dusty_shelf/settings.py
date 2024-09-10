@@ -75,8 +75,14 @@ WSGI_APPLICATION = 'dusty_shelf.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'djongo',
+        'NAME': 'DustyShelf',
+        'CLIENT': {
+            'host': 'mongodb+srv://mongodbstudent1:t4aK6RZdC4QE3eM4@cluster0.6cclx.mongodb.net/',
+            'username': 'mongodbstudent1',
+            'password': 't4aK6RZdC4QE3eM4',
+            'authMechanism': 'SCRAM-SHA-1',
+        }
     }
 }
 
