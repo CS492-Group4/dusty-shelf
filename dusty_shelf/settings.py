@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'dusty_shelf',
+    'books',
 ]
 
 MIDDLEWARE = [
@@ -85,6 +87,7 @@ DATABASES = {
         }
     }
 }
+
 
 
 # Password validation
