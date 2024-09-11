@@ -71,6 +71,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'dusty_shelf.wsgi.application'
 
+#Login/out redirect
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
