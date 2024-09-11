@@ -1,0 +1,3 @@
+
+[console_scripts]
+pipz = pipz.pipzcli:cli

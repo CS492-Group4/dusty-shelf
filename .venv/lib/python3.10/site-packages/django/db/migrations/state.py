@@ -310,13 +310,14 @@ class ProjectState:
                         for from_field_name in from_fields
                     ]
                 )
-        # Fix unique_together to refer to the new field.
+        # Fix index/unique_together to refer to the new field.
         options = model_state.options
-        if "unique_together" in options:
-            options["unique_together"] = [
-                [new_name if n == old_name else n for n in together]
-                for together in options["unique_together"]
-            ]
+        for option in ("index_together", "unique_together"):
+            if option in options:
+                options[option] = [
+                    [new_name if n == old_name else n for n in together]
+                    for together in options[option]
+                ]
         # Fix to_fields to refer to the new field.
         delay = True
         references = get_references(self, model_key, (old_name, found))
@@ -524,11 +525,11 @@ class ProjectState:
             if model_state.options.get("proxy"):
                 proxy_models[model_key] = model_state
                 # Find a concrete model for the proxy.
-                concrete_models_mapping[model_key] = (
-                    self._find_concrete_model_from_proxy(
-                        proxy_models,
-                        model_state,
-                    )
+                concrete_models_mapping[
+                    model_key
+                ] = self._find_concrete_model_from_proxy(
+                    proxy_models,
+                    model_state,
                 )
             else:
                 concrete_models_mapping[model_key] = model_key
@@ -679,13 +680,10 @@ class StateApps(Apps):
         """Return a clone of this registry."""
         clone = StateApps([], {})
         clone.all_models = copy.deepcopy(self.all_models)
-
-        for app_label in self.app_configs:
-            app_config = AppConfigStub(app_label)
+        clone.app_configs = copy.deepcopy(self.app_configs)
+        # Set the pointer to the correct app registry.
+        for app_config in clone.app_configs.values():
             app_config.apps = clone
-            app_config.import_models()
-            clone.app_configs[app_label] = app_config
-
         # No need to actually clone them, they'll never change
         clone.real_models = self.real_models
         return clone
@@ -738,15 +736,13 @@ class ModelState:
             # Sanity-check that relation fields are NOT referring to a model class.
             if field.is_relation and hasattr(field.related_model, "_meta"):
                 raise ValueError(
-                    'Model fields in "ModelState.fields" cannot refer to a model class '
-                    f'- "{self.app_label}.{self.name}.{name}.to" does. Use a string '
-                    "reference instead."
+                    'ModelState.fields cannot refer to a model class - "%s.to" does. '
+                    "Use a string reference instead." % name
                 )
             if field.many_to_many and hasattr(field.remote_field.through, "_meta"):
                 raise ValueError(
-                    'Model fields in "ModelState.fields" cannot refer to a model class '
-                    f'- "{self.app_label}.{self.name}.{name}.through" does. Use a '
-                    "string reference instead."
+                    'ModelState.fields cannot refer to a model class - "%s.through" '
+                    "does. Use a string reference instead." % name
                 )
         # Sanity-check that indexes have their name set.
         for index in self.options["indexes"]:

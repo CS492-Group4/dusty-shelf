@@ -1,0 +1,21 @@
+Metadata-Version: 2.1
+Name: pipz
+Version: 0.9.875
+Summary: Private Package Management Utility
+Home-page: UNKNOWN
+Author: Julian Mulla
+Author-email: jmulla@gmail.com
+License: mit
+Platform: any
+Classifier: Development Status :: 4 - Beta
+Classifier: Programming Language :: Python
+Requires-Dist: click
+Requires-Dist: requests
+Requires-Dist: bs4
+Requires-Dist: dockerfile-parse
+Requires-Dist: boto3
+Requires-Dist: glob2
+
+README.rst
+
+
