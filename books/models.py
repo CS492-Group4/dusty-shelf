@@ -1,5 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
+from decimal import Decimal
+from bson import ObjectId
+from bson import Decimal128
 
 # Book model for storing book information
 class Book(models.Model):
@@ -12,8 +15,10 @@ class Book(models.Model):
         return self.title
 
 class UserProfile(models.Model):
+    id = models.CharField(primary_key=True, max_length=24, default=lambda: str(ObjectId()))
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    credit = models.DecimalField(max_digits=10, decimal_places=2, default=0.00) 
+    # Store credit as Decimal128 in MongoDB
+    credit = models.CharField(max_length=100, default=str(Decimal128('0.00')))
     is_admin = models.BooleanField(default=False)
     is_employee = models.BooleanField(default=False)
 

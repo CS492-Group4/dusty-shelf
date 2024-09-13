@@ -1,0 +1,19 @@
+<h2>User Dashboard</h2>
+
+<p>Welcome, {{ request.user.username }}!</p>
+
+{% if is_admin %}
+    <h3>Admin Options</h3>
+    <ul>
+        <li><a href="{% url 'add_book' %}">Add New Book</a></li>
+        <li><a href="{% url 'manage_inventory' %}">Manage Inventory</a></li>
+    </ul>
+{% elif is_employee %}
+    <h3>Employee Options</h3>
+    <ul>
+        <li><a href="{% url 'manage_inventory' %}">Manage Inventory</a></li>
+    </ul>
+{% else %}
+    <h3>Customer Dashboard</h3>
+    <p>Browse our collection and make purchases!</p>
+{% endif %}

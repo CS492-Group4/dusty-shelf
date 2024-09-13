@@ -7,6 +7,11 @@ from .forms import CustomerRegistrationForm
 from .forms import BookForm
 from django.shortcuts import get_object_or_404
 from bson import ObjectId
+from decimal import Decimal
+from .models import UserProfile
+from .forms import EmployeeCreationForm
+from bson import Decimal128
+from django.contrib.auth.decorators import user_passes_test
 
 # MongoDB connection
 client = MongoClient("mongodb+srv://mongodbstudent1:t4aK6RZdC4QE3eM4@cluster0.6cclx.mongodb.net/")
@@ -68,18 +73,18 @@ def search_books(request):
             result_str += f"Title: {book['title']}, Author: {book['author']}, Price: ${book['price']}, Quantity: {book['quantity']}\n"
         return HttpResponse(result_str)
     
-
-#Register Customer
+# Register Customer
 def register_customer(request):
     if request.method == 'POST':
         form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save() 
+            user_profile, created = UserProfile.objects.get_or_create(user=user, defaults={'credit': '0.00'})
             login(request, user)
             return redirect('dashboard')
     else:
         form = CustomerRegistrationForm()
-    
+
     return render(request, 'register.html', {'form': form})
 
 
@@ -89,13 +94,17 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def user_dashboard(request):
-    user_profile = request.user.userprofile  # Access the custom UserProfile
+    user_profile, created = UserProfile.objects.get_or_create(user=request.user, defaults={'credit': '0.00'})
+    
     context = {
         'is_admin': user_profile.is_admin,
         'is_employee': user_profile.is_employee,
-        'is_regular_user': not user_profile.is_admin and not user_profile.is_employee,
+        'credit': user_profile.credit,
+        'can_manage_inventory': user_profile.is_admin or user_profile.is_employee,
     }
+    
     return render(request, 'dashboard.html', context)
+
 
 #Edit Book View
 def edit_book(request, book_id):
@@ -128,3 +137,30 @@ def edit_book(request, book_id):
 def delete_book(request, book_id):
     books_collection.delete_one({"_id": ObjectId(book_id)})
     return redirect('manage_inventory')
+
+# View to create an employee
+def create_employee(request):
+    if request.method == 'POST':
+        form = EmployeeCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            UserProfile.objects.get_or_create(user=user, defaults={'is_employee': True, 'is_admin': False, 'credit': '0.00'})
+            return redirect('dashboard')
+    else:
+        form = EmployeeCreationForm()
+
+    return render(request, 'create_employee.html', {'form': form})
+
+
+# View to create an admin
+def create_admin(request):
+    if request.method == 'POST':
+        form = EmployeeCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            UserProfile.objects.get_or_create(user=user, defaults={'is_employee': False, 'is_admin': True, 'credit': '0.00'})
+            return redirect('dashboard')
+    else:
+        form = EmployeeCreationForm()
+
+    return render(request, 'create_admin.html', {'form': form})
