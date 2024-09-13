@@ -4,39 +4,51 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login
 from .forms import CustomerRegistrationForm
+from .forms import BookForm
+from django.shortcuts import get_object_or_404
+from bson import ObjectId
 
 # MongoDB connection
 client = MongoClient("mongodb+srv://mongodbstudent1:t4aK6RZdC4QE3eM4@cluster0.6cclx.mongodb.net/")
 db = client["DustyShelf"]
 books_collection = db["books"]
 
-print("add_book view is being called!")
+# Manage Inventory View
+def manage_inventory(request):
+    # Fetch all books from MongoDB
+    books = list(books_collection.find())
 
-#Test
-#def add_book(request):
-    # logic to add a book
-#    return HttpResponse("Book added successfully!")
+    for book in books:
+        book['id'] = str(book['_id'])
+
+    return render(request, 'manage_inventory.html', {'books': books})
 
 
-# Add book view
+# Add book view page
 def add_book(request):
-    name = request.GET.get('name')
-    author = request.GET.get('author')
-    price = float(request.GET.get('price'))
-    quantity = int(request.GET.get('quantity'))
+    if request.method == 'POST':
+        form = BookForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['title']
+            author = form.cleaned_data['author']
+            price = float(form.cleaned_data['price'])
+            quantity = form.cleaned_data['quantity']
 
+            book = {
+                "title": name,
+                "author": author,
+                "price": price,
+                "quantity": quantity
+            }
+            books_collection.insert_one(book)
+            return redirect('dashboard')
 
-    book = {
-        "title": name,
-        "author": author,
-        "price": price,
-        "quantity": quantity
-    }
-    result = books_collection.insert_one(book)
-    return HttpResponse(f"Book added with ID: {result.inserted_id}")
+    else:
+        form = BookForm()
 
+    return render(request, 'add_book.html', {'form': form})
 
-# Search books view
+# Search books view (Needs to be updated)
 def search_books(request):
     search_term = request.GET.get('search_term')
 
@@ -71,7 +83,7 @@ def register_customer(request):
     return render(request, 'register.html', {'form': form})
 
 
-#Role-based Profile view
+#Role-based Profile view backend
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
@@ -84,3 +96,35 @@ def user_dashboard(request):
         'is_regular_user': not user_profile.is_admin and not user_profile.is_employee,
     }
     return render(request, 'dashboard.html', context)
+
+#Edit Book View
+def edit_book(request, book_id):
+    book = books_collection.find_one({"_id": ObjectId(book_id)})
+    
+    if request.method == 'POST':
+        form = BookForm(request.POST)
+        if form.is_valid():
+            books_collection.update_one(
+                {"_id": ObjectId(book_id)},
+                {"$set": {
+                    "title": form.cleaned_data['title'],
+                    "author": form.cleaned_data['author'],
+                    "price": form.cleaned_data['price'],
+                    "quantity": form.cleaned_data['quantity']
+                }}
+            )
+            return redirect('manage_inventory')
+    else:
+        form = BookForm(initial={
+            'title': book['title'],
+            'author': book['author'],
+            'price': book['price'],
+            'quantity': book['quantity'],
+        })
+    
+    return render(request, 'edit_book.html', {'form': form, 'book_id': book_id})
+
+#Delete Book View
+def delete_book(request, book_id):
+    books_collection.delete_one({"_id": ObjectId(book_id)})
+    return redirect('manage_inventory')
