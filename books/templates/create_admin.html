@@ -1,7 +1,10 @@
-  <h2>Create Admin Account</h2>
-  <form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Create Admin</button>
-  </form>
+<h2>Create Admin Account</h2>
+<form method="POST">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Create Admin</button>
+</form>
 
+<p>
+    <a href="{% url 'dashboard' %}">Return to Dashboard</a>
+</p>

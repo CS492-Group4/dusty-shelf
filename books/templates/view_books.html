@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Books</title>
+</head>
+<body>
+    <h1>Books Collection</h1>
+
+    <!-- Search form -->
+    <form method="GET" action="{% url 'view_books' %}">
+        <input type="text" name="search_term" placeholder="Search by title or author" value="{{ search_term }}">
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Display search results -->
+    <ul>
+        {% if books %}
+            {% for book in books %}
+            <li>
+                <strong>{{ book.title }}</strong><br>
+                Author: {{ book.author }}<br>
+                Price: ${{ book.price }}<br>
+                Quantity: {{ book.quantity }}
+            </li>
+            <hr>
+            {% endfor %}
+        {% else %}
+            <p>No books found matching your search.</p>
+        {% endif %}
+    </ul>
+
+    <!-- Add a return link to the dashboard or home page -->
+    <p>
+        <a href="{% url 'dashboard' %}">Return to Dashboard</a>
+    </p>
+</body>
+</html>

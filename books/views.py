@@ -2,23 +2,41 @@ from django.http import HttpResponse
 from pymongo import MongoClient
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
+from django.contrib.auth import authenticate, login
 from .forms import CustomerRegistrationForm
 from .forms import BookForm
-from django.shortcuts import get_object_or_404
 from bson import ObjectId
-from decimal import Decimal
 from .models import UserProfile
 from .forms import EmployeeCreationForm
-from bson import Decimal128
 from django.contrib.auth.decorators import user_passes_test
+from .forms import AdminCreationForm
+from django.contrib.auth.views import LoginView
+from django.contrib import messages
 
 # MongoDB connection
 client = MongoClient("mongodb+srv://mongodbstudent1:t4aK6RZdC4QE3eM4@cluster0.6cclx.mongodb.net/")
 db = client["DustyShelf"]
 books_collection = db["books"]
 
+# Employee/Admin lockout
+def is_admin_or_employee(user):
+    try:
+        user_profile = UserProfile.objects.get(user=user)
+        return user_profile.is_admin or user_profile.is_employee
+    except UserProfile.DoesNotExist:
+        return False
+    
+# Admin lockout
+def is_admin(user):
+    try:
+        user_profile = UserProfile.objects.get(user=user)
+        return user_profile.is_admin
+    except UserProfile.DoesNotExist:
+        return False
+
 # Manage Inventory View
+@login_required
+@user_passes_test(is_admin_or_employee)
 def manage_inventory(request):
     # Fetch all books from MongoDB
     books = list(books_collection.find())
@@ -30,6 +48,8 @@ def manage_inventory(request):
 
 
 # Add book view page
+@login_required
+@user_passes_test(is_admin_or_employee)
 def add_book(request):
     if request.method == 'POST':
         form = BookForm(request.POST)
@@ -46,7 +66,7 @@ def add_book(request):
                 "quantity": quantity
             }
             books_collection.insert_one(book)
-            return redirect('dashboard')
+            return redirect('manage_inventory')
 
     else:
         form = BookForm()
@@ -79,7 +99,10 @@ def register_customer(request):
         form = CustomerRegistrationForm(request.POST)
         if form.is_valid():
             user = form.save() 
-            user_profile, created = UserProfile.objects.get_or_create(user=user, defaults={'credit': '0.00'})
+            user_profile, created = UserProfile.objects.get_or_create(user=user)
+            if not created:
+                user_profile.credit = '0.00'
+                user_profile.save()
             login(request, user)
             return redirect('dashboard')
     else:
@@ -107,6 +130,8 @@ def user_dashboard(request):
 
 
 #Edit Book View
+@login_required
+@user_passes_test(is_admin_or_employee)
 def edit_book(request, book_id):
     book = books_collection.find_one({"_id": ObjectId(book_id)})
     
@@ -134,17 +159,26 @@ def edit_book(request, book_id):
     return render(request, 'edit_book.html', {'form': form, 'book_id': book_id})
 
 #Delete Book View
+@login_required
+@user_passes_test(is_admin_or_employee)
 def delete_book(request, book_id):
     books_collection.delete_one({"_id": ObjectId(book_id)})
     return redirect('manage_inventory')
 
 # View to create an employee
+@login_required
+@user_passes_test(is_admin_or_employee)
 def create_employee(request):
     if request.method == 'POST':
         form = EmployeeCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            UserProfile.objects.get_or_create(user=user, defaults={'is_employee': True, 'is_admin': False, 'credit': '0.00'})
+            user_profile, created = UserProfile.objects.get_or_create(user=user)
+            if created:
+                user_profile.is_employee = True
+                user_profile.is_admin = False
+                user_profile.credit = '0.00'
+                user_profile.save()
             return redirect('dashboard')
     else:
         form = EmployeeCreationForm()
@@ -153,14 +187,71 @@ def create_employee(request):
 
 
 # View to create an admin
+@login_required
+@user_passes_test(is_admin)
 def create_admin(request):
     if request.method == 'POST':
-        form = EmployeeCreationForm(request.POST)
+        form = AdminCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            UserProfile.objects.get_or_create(user=user, defaults={'is_employee': False, 'is_admin': True, 'credit': '0.00'})
+            user.is_superuser = True
+            user.is_staff = True
+            user.save()
+            user_profile, created = UserProfile.objects.get_or_create(user=user)
+            if created:
+                user_profile.is_employee = False
+                user_profile.is_admin = True
+                user_profile.credit = '0.00'
+                user_profile.save()          
+            login(request, user)
             return redirect('dashboard')
     else:
-        form = EmployeeCreationForm()
+        form = AdminCreationForm()
 
     return render(request, 'create_admin.html', {'form': form})
+
+#landing page
+def landing_page(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')  # Redirect to dashboard if logged in
+    return render(request, 'landing.html') 
+
+# View to display all books for customers
+def view_books(request):
+    search_term = request.GET.get('search_term', '')
+    
+    if search_term:
+        # Search by title or author
+        query = {"$or": [
+            {"title": {"$regex": search_term, "$options": "i"}},
+            {"author": {"$regex": search_term, "$options": "i"}}
+        ]}
+        books = list(books_collection.find(query))
+    else:
+        # Fetch all books if no search term is entered
+        books = list(books_collection.find())
+    
+    # Convert ObjectId to string for each book
+    for book in books:
+        book['id'] = str(book['_id'])
+
+    return render(request, 'view_books.html', {'books': books, 'search_term': search_term})
+
+
+#Custom-Login
+def custom_login(request):
+    if request.user.is_authenticated:
+        return redirect('dashboard')  # Redirect to dashboard if the user is already logged in
+
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)  # Log in the user
+            return redirect('dashboard')
+        else:
+            messages.error(request, 'Invalid username or password')
+    
+    return render(request, 'login.html')
