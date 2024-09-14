@@ -140,12 +140,14 @@ def edit_book(request, book_id):
     if request.method == 'POST':
         form = BookForm(request.POST)
         if form.is_valid():
+            price = float(form.cleaned_data['price'])
+
             books_collection.update_one(
                 {"_id": ObjectId(book_id)},
                 {"$set": {
                     "title": form.cleaned_data['title'],
                     "author": form.cleaned_data['author'],
-                    "price": form.cleaned_data['price'],
+                    "price": price,
                     "quantity": form.cleaned_data['quantity']
                 }}
             )

@@ -15,6 +15,9 @@
     <h3>Employee Options</h3>
     <ul>
         <li><a href="{% url 'manage_inventory' %}">Manage Inventory</a></li>
+        <li><a href="{% url 'add_book' %}">Add New Book</a></li>
+        <p>Browse our collection and make purchases!</p>
+        <a href="{% url 'view_books' %}">View All Books</a>
     </ul>
 {% else %}
     <h3>Customer Dashboard</h3>
