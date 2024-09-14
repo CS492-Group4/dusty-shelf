@@ -61,3 +61,10 @@ class BookForm(forms.Form):
     price = forms.DecimalField(max_digits=6, decimal_places=2, label='Price')
     quantity = forms.IntegerField(min_value=1, label='Quantity')
 
+#Credit
+class AssignCreditForm(forms.ModelForm):
+    credit = forms.DecimalField(max_digits=10, decimal_places=2, label="Credit Amount")
+
+    class Meta:
+        model = UserProfile
+        fields = ['credit']

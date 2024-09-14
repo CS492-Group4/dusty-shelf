@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Users</title>
+</head>
+<body>
+    <h1>Search Users and Assign Credit</h1>
+
+    <!-- Search form -->
+    <form method="GET" action="{% url 'search_users' %}">
+        <label for="query">Search by Username or Email:</label>
+        <input type="text" name="query" id="query" value="{{ query }}" placeholder="Enter username or email">
+        <button type="submit">Search</button>
+    </form>
+
+    <!-- Credit assignment form -->
+    <form method="POST" action="{% url 'search_users' %}">
+        {% csrf_token %}
+        
+        <!-- Display user list with checkboxes -->
+        <ul>
+            {% for user in users %}
+            <li>
+                <input type="checkbox" name="selected_users" value="{{ user.id }}">
+                <strong>{{ user.username }}</strong><br>
+                Email: {{ user.email }}<br>
+                Current Credit: {{ user.userprofile.credit }}<br>
+            </li>
+            <hr>
+            {% endfor %}
+        </ul>
+
+        <!-- Credit input field -->
+        <label for="credit_amount">Credit Amount to Assign:</label>
+        <input type="number" name="credit_amount" id="credit_amount" step="0.01" required>
+
+        <button type="submit">Assign Credit</button>
+    </form>
+
+    <p><a href="{% url 'dashboard' %}">Return to Dashboard</a></p>
+</body>
+</html>

@@ -18,6 +18,8 @@ urlpatterns = [
     path('', views.landing_page, name='landing_page'),
     path('login/', auth_views.LoginView.as_view(redirect_authenticated_user=True, template_name='login.html'), name='login'),
     path('view_books/', views.view_books, name='view_books'),
+    path('assign_credit/<int:user_id>/', views.assign_credit, name='assign_credit'),
+    path('search_users/', views.search_users, name='search_users'),
 ]
 print("books/urls.py is being loaded!")
 

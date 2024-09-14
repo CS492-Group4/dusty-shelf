@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Credit to {{ user.username }}</title>
+</head>
+<body>
+    <h1>Assign Credit to {{ user.username }}</h1>
+    <p>Current Credit: {{ user_profile.credit }}</p>
+
+    <form method="POST">
+        {% csrf_token %}
+        <label for="credit">Enter Credit Amount to Add:</label>
+        <input type="number" name="credit" step="0.01" min="0" required>
+        <button type="submit">Add Credit</button>
+    </form>
+
+    <p><a href="{% url 'dashboard' %}">Return to Dashboard</a></p>
+</body>
+</html>

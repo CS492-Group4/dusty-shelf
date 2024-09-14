@@ -10,8 +10,10 @@ from .models import UserProfile
 from .forms import EmployeeCreationForm
 from django.contrib.auth.decorators import user_passes_test
 from .forms import AdminCreationForm
-from django.contrib.auth.views import LoginView
 from django.contrib import messages
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+from decimal import Decimal
 
 # MongoDB connection
 client = MongoClient("mongodb+srv://mongodbstudent1:t4aK6RZdC4QE3eM4@cluster0.6cclx.mongodb.net/")
@@ -255,3 +257,58 @@ def custom_login(request):
             messages.error(request, 'Invalid username or password')
     
     return render(request, 'login.html')
+
+#credit Administration
+@login_required
+@user_passes_test(is_admin)
+def assign_credit(request, user_id):
+    user = get_object_or_404(User, pk=user_id)
+    user_profile = get_object_or_404(UserProfile, user=user)
+
+    if request.method == 'POST':
+        try:
+            # Get the amount to add from the form
+            additional_credit = request.POST.get('credit')
+            additional_credit = Decimal(additional_credit)
+            
+            # Add the new credit to the existing amount
+            current_credit = Decimal(user_profile.credit)
+            new_credit = current_credit + additional_credit
+            
+            # Update and save the profile with the new credit
+            user_profile.credit = str(new_credit)
+            user_profile.save()
+
+            messages.success(request, f"Successfully added {additional_credit} credit to {user.username}. New balance: {new_credit}.")
+            return redirect('dashboard')
+
+        except Exception as e:
+            messages.error(request, f"Failed to add credit: {e}")
+
+    return render(request, 'assign_credit.html', {'user': user, 'user_profile': user_profile})
+
+#user Search option
+from django.contrib.auth.models import User
+
+@login_required
+@user_passes_test(is_admin)  # Only admins can search users
+def search_users(request):
+    query = request.GET.get('query', '') 
+
+    if query:
+        users = User.objects.filter(username__icontains=query) | User.objects.filter(email__icontains=query)
+    else:
+        users = User.objects.all()
+
+    if request.method == 'POST':
+        selected_user_ids = request.POST.getlist('selected_users') 
+        credit_amount = request.POST.get('credit_amount', '0')
+
+        for user_id in selected_user_ids:
+            user_profile = UserProfile.objects.get(user_id=user_id)
+            user_profile.credit = str(Decimal(user_profile.credit) + Decimal(credit_amount))
+            user_profile.save()
+
+        return redirect('search_users')
+
+    return render(request, 'search_users.html', {'users': users, 'query': query})
