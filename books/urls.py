@@ -20,6 +20,10 @@ urlpatterns = [
     path('view_books/', views.view_books, name='view_books'),
     path('assign_credit/<int:user_id>/', views.assign_credit, name='assign_credit'),
     path('search_users/', views.search_users, name='search_users'),
+    path('purchase_book/<str:book_id>/', views.purchase_book, name='purchase_book'),
+    path('personal_library/', views.view_personal_library, name='personal_library'),
+    path('view_all_receipts/', views.view_all_receipts, name='view_all_receipts'),
+
 ]
 print("books/urls.py is being loaded!")
 

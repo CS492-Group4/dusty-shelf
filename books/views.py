@@ -14,11 +14,13 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from decimal import Decimal
+from .models import Receipt
 
 # MongoDB connection
 client = MongoClient("mongodb+srv://mongodbstudent1:t4aK6RZdC4QE3eM4@cluster0.6cclx.mongodb.net/")
 db = client["DustyShelf"]
 books_collection = db["books"]
+personal_library_collection = db["personal_library"]
 
 # Employee/Admin lockout
 def is_admin_or_employee(user):
@@ -36,87 +38,11 @@ def is_admin(user):
     except UserProfile.DoesNotExist:
         return False
 
-# Manage Inventory View
-@login_required
-@user_passes_test(is_admin_or_employee)
-def manage_inventory(request):
-    # Fetch all books from MongoDB
-    books = list(books_collection.find())
-
-    for book in books:
-        book['id'] = str(book['_id'])
-
-    return render(request, 'manage_inventory.html', {'books': books})
-
-
-# Add book view page
-@login_required
-@user_passes_test(is_admin_or_employee)
-def add_book(request):
-    if request.method == 'POST':
-        form = BookForm(request.POST)
-        if form.is_valid():
-            name = form.cleaned_data['title']
-            author = form.cleaned_data['author']
-            price = float(form.cleaned_data['price'])
-            quantity = form.cleaned_data['quantity']
-
-            book = {
-                "title": name,
-                "author": author,
-                "price": price,
-                "quantity": quantity
-            }
-            books_collection.insert_one(book)
-            return redirect('manage_inventory')
-
-    else:
-        form = BookForm()
-
-    return render(request, 'add_book.html', {'form': form})
-
-# Search books view (Needs to be updated)
-def search_books(request):
-    search_term = request.GET.get('search_term')
-
-    query = {"$or": [
-        {"title": {"$regex": search_term, "$options": "i"}},
-        {"author": {"$regex": search_term, "$options": "i"}}
-    ]}
-    
-    results = books_collection.find(query)
-    results_list = list(results)
-    
-    if len(results_list) == 0:
-        return HttpResponse("No books found.")
-    else:
-        result_str = "Search Results:\n"
-        for book in results_list:
-            result_str += f"Title: {book['title']}, Author: {book['author']}, Price: ${book['price']}, Quantity: {book['quantity']}\n"
-        return HttpResponse(result_str)
-    
-# Register Customer
-def register_customer(request):
-    if request.method == 'POST':
-        form = CustomerRegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save() 
-            user_profile, created = UserProfile.objects.get_or_create(user=user)
-            if not created:
-                user_profile.credit = '0.00'
-                user_profile.save()
-            login(request, user)
-            return redirect('dashboard')
-    else:
-        form = CustomerRegistrationForm()
-
-    return render(request, 'register.html', {'form': form})
-
-
-#Role-based Profile view backend
+# Role-based Profile view backend
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
+# Dashboard
 @login_required
 def user_dashboard(request):
     user_profile, created = UserProfile.objects.get_or_create(user=request.user, defaults={'credit': '0.00'})
@@ -130,6 +56,19 @@ def user_dashboard(request):
     
     return render(request, 'dashboard.html', context)
 
+
+
+# Manage Inventory View
+@login_required
+@user_passes_test(is_admin_or_employee)
+def manage_inventory(request):
+    # Fetch all books from MongoDB
+    books = list(books_collection.find())
+
+    for book in books:
+        book['id'] = str(book['_id'])
+
+    return render(request, 'manage_inventory.html', {'books': books})
 
 #Edit Book View
 @login_required
@@ -169,7 +108,154 @@ def delete_book(request, book_id):
     books_collection.delete_one({"_id": ObjectId(book_id)})
     return redirect('manage_inventory')
 
-# View to create an employee
+# Add book view page
+@login_required
+@user_passes_test(is_admin_or_employee)
+def add_book(request):
+    if request.method == 'POST':
+        form = BookForm(request.POST)
+        if form.is_valid():
+            name = form.cleaned_data['title']
+            author = form.cleaned_data['author']
+            price = float(form.cleaned_data['price'])
+            quantity = form.cleaned_data['quantity']
+
+            book = {
+                "title": name,
+                "author": author,
+                "price": price,
+                "quantity": quantity
+            }
+            books_collection.insert_one(book)
+            return redirect('manage_inventory')
+
+    else:
+        form = BookForm()
+
+    return render(request, 'add_book.html', {'form': form})
+
+# View to display all books for customers
+def view_books(request):
+    search_term = request.GET.get('search_term', '')
+    
+    if search_term:
+        # Search by title or author
+        query = {"$or": [
+            {"title": {"$regex": search_term, "$options": "i"}},
+            {"author": {"$regex": search_term, "$options": "i"}}
+        ]}
+        books = list(books_collection.find(query))
+    else:
+        # Fetch all books if no search term is entered
+        books = list(books_collection.find())
+    
+    # Convert ObjectId to string for each book
+    for book in books:
+        book['id'] = str(book['_id'])
+    
+    user_profile = UserProfile.objects.get(user=request.user)
+    current_credit = user_profile.credit
+
+
+    return render(request, 'view_books.html', {'books': books, 'current_credit': current_credit, 'search_term': search_term})
+
+# Search books view (Needs to be updated)
+def search_books(request):
+    search_term = request.GET.get('search_term')
+
+    query = {"$or": [
+        {"title": {"$regex": search_term, "$options": "i"}},
+        {"author": {"$regex": search_term, "$options": "i"}}
+    ]}
+    
+    results = books_collection.find(query)
+    results_list = list(results)
+    
+    if len(results_list) == 0:
+        return HttpResponse("No books found.")
+    else:
+        result_str = "Search Results:\n"
+        for book in results_list:
+            result_str += f"Title: {book['title']}, Author: {book['author']}, Price: ${book['price']}, Quantity: {book['quantity']}\n"
+        return HttpResponse(result_str)
+    
+# Purchase Books    
+@login_required
+def purchase_book(request, book_id):
+    book = books_collection.find_one({"_id": ObjectId(book_id)})
+    user_profile = get_object_or_404(UserProfile, user=request.user)
+
+    if book and user_profile:
+        book_price = Decimal(str(book['price']))
+        
+        # Check if the user has enough credit
+        if Decimal(user_profile.credit) >= book_price:
+            # Deduct the price from user's credit
+            user_profile.credit = str(Decimal(user_profile.credit) - book_price)
+            user_profile.save()
+
+            # Reduce the book quantity
+            if book['quantity'] > 0:
+                books_collection.update_one(
+                    {"_id": ObjectId(book_id)},
+                    {"$inc": {"quantity": -1}}
+                )
+
+                # Add the book to user's personal library
+                personal_library_collection.insert_one({
+                    "user_id": str(request.user.id),
+                    "book_id": str(book['_id']),
+                    "title": book['title'],
+                    "author": book['author'],
+                    "price": book['price']
+                })
+
+                # Create a receipt entry for the purchase
+                Receipt.objects.create(
+                    user=request.user,
+                    book_title=book['title'],
+                    book_author=book['author'],
+                    price=book_price,
+                    quantity=1
+                )
+
+                messages.success(request, "Purchase successful! Book added to your library.")
+            else:
+                messages.error(request, "Sorry, this book is out of stock.")
+        else:
+            messages.error(request, "You don't have enough credit to purchase this book.")
+    
+    return redirect('view_books')
+
+# Customer Personal Library
+@login_required
+def view_personal_library(request):
+    user_id = str(request.user.id)
+    personal_books = list(personal_library_collection.find({"user_id": user_id}))
+
+    for book in personal_books:
+        book['id'] = str(book['_id'])
+
+    return render(request, 'view_personal_library.html', {'books': personal_books})
+
+# Register Customer
+def register_customer(request):
+    if request.method == 'POST':
+        form = CustomerRegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save() 
+            user_profile, created = UserProfile.objects.get_or_create(user=user)
+            if not created:
+                user_profile.credit = '0.00'
+                user_profile.save()
+            login(request, user)
+            return redirect('dashboard')
+    else:
+        form = CustomerRegistrationForm()
+
+    return render(request, 'register.html', {'form': form})
+
+# Create an employee
 @login_required
 @user_passes_test(is_admin_or_employee)
 def create_employee(request):
@@ -190,7 +276,7 @@ def create_employee(request):
     return render(request, 'create_employee.html', {'form': form})
 
 
-# View to create an admin
+# Create an admin
 @login_required
 @user_passes_test(is_admin)
 def create_admin(request):
@@ -214,35 +300,13 @@ def create_admin(request):
 
     return render(request, 'create_admin.html', {'form': form})
 
-#landing page
+#landing page Redirect
 def landing_page(request):
     if request.user.is_authenticated:
         return redirect('dashboard')  # Redirect to dashboard if logged in
     return render(request, 'landing.html') 
 
-# View to display all books for customers
-def view_books(request):
-    search_term = request.GET.get('search_term', '')
-    
-    if search_term:
-        # Search by title or author
-        query = {"$or": [
-            {"title": {"$regex": search_term, "$options": "i"}},
-            {"author": {"$regex": search_term, "$options": "i"}}
-        ]}
-        books = list(books_collection.find(query))
-    else:
-        # Fetch all books if no search term is entered
-        books = list(books_collection.find())
-    
-    # Convert ObjectId to string for each book
-    for book in books:
-        book['id'] = str(book['_id'])
-
-    return render(request, 'view_books.html', {'books': books, 'search_term': search_term})
-
-
-#Custom-Login
+#Custom-Login Redirect
 def custom_login(request):
     if request.user.is_authenticated:
         return redirect('dashboard')  # Redirect to dashboard if the user is already logged in
@@ -260,7 +324,7 @@ def custom_login(request):
     
     return render(request, 'login.html')
 
-#credit Administration
+#Assign Credit
 @login_required
 @user_passes_test(is_admin)
 def assign_credit(request, user_id):
@@ -289,7 +353,7 @@ def assign_credit(request, user_id):
 
     return render(request, 'assign_credit.html', {'user': user, 'user_profile': user_profile})
 
-#user Search option
+#User Search for Credit
 from django.contrib.auth.models import User
 
 @login_required
@@ -314,3 +378,9 @@ def search_users(request):
         return redirect('search_users')
 
     return render(request, 'search_users.html', {'users': users, 'query': query})
+
+@login_required
+@user_passes_test(is_admin_or_employee)
+def view_all_receipts(request):
+    receipts = Receipt.objects.all().order_by('-purchase_date')
+    return render(request, 'view_all_receipts.html', {'receipts': receipts})

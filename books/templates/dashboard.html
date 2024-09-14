@@ -1,32 +1,45 @@
-<h2>User Dashboard</h2>
-
-<p>Welcome, {{ request.user.username }}!</p>
-
+<h2>Welcome, {{ request.user.username }}! to the Dusty Shelf Book Store</h2>
+<p><strong>Your Available Credit:</strong> ${{ credit }}</p>
 {% if is_admin %}
+<h3>Browse our collection and make purchases!</h3>
+    <ul>    
+        <li><a href="{% url 'view_books' %}">View All Books</a></li>
+        <li><a href="{% url 'personal_library' %}">View Your Collection</a></li>
+    </ul>
 <h3>Admin Options</h3>
 <ul>
-    <li><a href="{% url 'create_employee' %}">Create Employee</a></li>
     <li><a href="{% url 'manage_inventory' %}">Manage Inventory</a></li>
     <li><a href="{% url 'add_book' %}">Add New Book</a></li>
+    <li><a href="{% url 'create_employee' %}">Create Employee</a></li>
     <li><a href="{% url 'create_admin' %}">Create Admin</a></li>
     <li><a href="/admin/">Access Admin Portal</a></li>
     <li><a href="{% url 'search_users' %}">Assign Credits to Users</a></li>
+    <li><a href="{% url 'view_all_receipts' %}">View All Receipts</a></li>
 {% elif is_employee %}
+<h3>Browse our collection and make purchases!</h3>
+    <ul>    
+        <li><a href="{% url 'view_books' %}">View All Books</a></li>
+        <li><a href="{% url 'personal_library' %}">View Your Collection</a></li>
+    </ul>
     <h3>Employee Options</h3>
     <ul>
         <li><a href="{% url 'manage_inventory' %}">Manage Inventory</a></li>
         <li><a href="{% url 'add_book' %}">Add New Book</a></li>
-        <p>Browse our collection and make purchases!</p>
-        <a href="{% url 'view_books' %}">View All Books</a>
-    </ul>
+        <li><a href="{% url 'view_all_receipts' %}">View All Receipts</a></li>
+    </ul>    
+
 {% else %}
-    <h3>Customer Dashboard</h3>
-    <p>Browse our collection and make purchases!</p>
-    <a href="{% url 'view_books' %}">View All Books</a>
+    <h3>Browse our collection and make purchases!</h3>
+    <ul>    
+        <li><a href="{% url 'view_books' %}">View All Books</a></li>
+        <li><a href="{% url 'personal_library' %}">View Your Collection</a></li>
+    </ul>
 {% endif %}
 
 <!-- Logout Button -->
+<p>
 <form action="{% url 'logout' %}" method="POST">
     {% csrf_token %}
     <button type="submit">Logout</button>
 </form>
+</p>

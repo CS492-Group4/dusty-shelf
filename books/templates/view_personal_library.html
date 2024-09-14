@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Library</title>
+</head>
+<body>
+    <h1>Your Personal Library</h1>
+
+    {% if books %}
+        <ul>
+            {% for book in books %}
+            <li>
+                <strong>{{ book.title }}</strong><br>
+                Author: {{ book.author }}<br>
+                Price: ${{ book.price }}
+            </li>
+            <hr>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You have no books in your library.</p>
+    {% endif %}
+
+    <p><a href="{% url 'dashboard' %}">Return to Dashboard</a></p>
+</body>
+</html>

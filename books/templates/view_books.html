@@ -8,6 +8,7 @@
 <body>
     <h1>Books Collection</h1>
 
+    <p><strong>Your Available Credit:</strong> ${{ current_credit }}</p>
     <!-- Search form -->
     <form method="GET" action="{% url 'view_books' %}">
         <input type="text" name="search_term" placeholder="Search by title or author" value="{{ search_term }}">
@@ -23,6 +24,10 @@
                 Author: {{ book.author }}<br>
                 Price: ${{ book.price }}<br>
                 Quantity: {{ book.quantity }}
+                <form action="{% url 'purchase_book' book.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Purchase</button>
+                </form>
             </li>
             <hr>
             {% endfor %}
