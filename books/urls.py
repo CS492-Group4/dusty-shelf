@@ -23,6 +23,8 @@ urlpatterns = [
     path('purchase_book/<str:book_id>/', views.purchase_book, name='purchase_book'),
     path('personal_library/', views.view_personal_library, name='personal_library'),
     path('view_all_receipts/', views.view_all_receipts, name='view_all_receipts'),
+    path('bulk_order_books/', views.bulk_order_books, name='bulk_order_books'),
+    path('bulk_order_receipts/', views.bulk_order_receipts_view, name='bulk_order_receipts'),
 
 ]
 print("books/urls.py is being loaded!")

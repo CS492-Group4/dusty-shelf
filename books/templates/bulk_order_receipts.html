@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Bulk Order Receipts</h1>
+
+{% for receipt in receipt_data %}
+    <div class="receipt">
+        <h3>Vendor: {{ receipt.vendor_name }}</h3>
+        <p>Order Date: {{ receipt.order_date|date:"F d, Y, g:i a" }}</p>
+        <h4>Books Ordered:</h4>
+        <ul>
+            {% for item in receipt.items %}
+                <li>
+                    {{ item.title }} by {{ item.author }} - 
+                    Quantity: {{ item.quantity }} - 
+                    Price per unit: ${{ item.price|floatformat:2 }} - 
+                    Subtotal: ${{ item.subtotal|floatformat:2 }}  <!-- Show subtotal -->
+                </li>
+            {% empty %}
+                <li>No books ordered for this receipt.</li>
+            {% endfor %}
+        </ul>
+        <h4>Total Price: ${{ receipt.total_price|floatformat:2 }}</h4>  <!-- Show total price -->
+    </div>
+{% empty %}
+    <p>No bulk order receipts available.</p>
+{% endfor %}
+
+{% endblock %}

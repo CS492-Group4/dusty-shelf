@@ -14,7 +14,7 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
-#models for Users
+# Models for Users
 class UserProfile(models.Model):
     id = models.CharField(primary_key=True, max_length=24, default=lambda: str(ObjectId()))
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -27,7 +27,7 @@ class UserProfile(models.Model):
         return f"{self.user.username} - Admin: {self.is_admin} - Employee: {self.is_employee} - Credit: {self.credit}"
     
 
-#models for receipts.
+# Models for Receipts.
 class Receipt(models.Model):
     id = models.CharField(primary_key=True, max_length=24, default=lambda: str(ObjectId()))
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -39,3 +39,20 @@ class Receipt(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.book_title} - {self.purchase_date}"
+    
+# Bulk order Receipt
+class BulkOrderReceipt(models.Model):
+    id = models.CharField(primary_key=True, max_length=24, default=lambda: str(ObjectId()))
+    vendor_name = models.CharField(max_length=255)
+    order_date = models.DateTimeField(auto_now_add=True)
+
+class BulkOrderItem(models.Model):
+    id = models.CharField(primary_key=True, max_length=24, default=lambda: str(ObjectId()))  # Use ObjectId as id
+    bulk_order = models.ForeignKey(BulkOrderReceipt, related_name='items', on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    author = models.CharField(max_length=255)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.title} by {self.author}"

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dusty_shelf',
     'books',
+    'Tests',
 ]
 
 MIDDLEWARE = [
@@ -90,7 +91,10 @@ DATABASES = {
             'username': 'mongodbstudent1',
             'password': 't4aK6RZdC4QE3eM4',
             'authMechanism': 'SCRAM-SHA-1',
-        }
+        },
+            'TEST': {
+            'MIRROR': 'default',
+        },
     }
 }
 

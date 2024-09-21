@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Bulk Order Books</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    <h2>Vendor Information</h2>
+    {{ receipt_form.as_p }}
+
+    <h2>Books</h2>
+    {{ formset.management_form }}
+
+    {% for form in formset %}
+        <div class="book-form">
+            <h3>Book {{ forloop.counter }}</h3>
+            {{ form.as_p }}
+        </div>
+    {% endfor %}
+
+    <button type="submit">Submit Bulk Order</button>
+</form>
+{% endblock %}

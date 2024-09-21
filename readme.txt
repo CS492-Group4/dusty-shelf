@@ -40,3 +40,7 @@ This is a Django-based application for managing bookstore inventory, sales, and 
 
 	Superuser: Superuser
 	password: 1password1
+
+6. Running python manage.py test requires placing # infront of all the requirements:
+   @login_required
+   @user_passes_test

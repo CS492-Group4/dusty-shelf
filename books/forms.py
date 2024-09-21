@@ -2,8 +2,9 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import UserProfile
+from .models import BulkOrderReceipt, BulkOrderItem
 
-#Customer Registration Form
+# Customer Registration Form
 class CustomerRegistrationForm(UserCreationForm):
     username = forms.CharField(max_length=150, required=True)
 
@@ -11,7 +12,7 @@ class CustomerRegistrationForm(UserCreationForm):
         model = User
         fields = ['username', 'password1', 'password2']
 
-#Employee Registration
+# Employee Registration
 class EmployeeCreationForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput)
     
@@ -54,17 +55,40 @@ class AdminCreationForm(forms.ModelForm):
             user_profile.save()
         return user
 
-#Books Form
-class BookForm(forms.Form):
-    title = forms.CharField(max_length=200, label='Book Title')
-    author = forms.CharField(max_length=200, label='Author')
-    price = forms.DecimalField(max_digits=6, decimal_places=2, label='Price')
-    quantity = forms.IntegerField(min_value=1, label='Quantity')
+# Books Form
+class BulkOrderForm(forms.Form):
+    title = forms.CharField(max_length=255, label="Title")
+    author = forms.CharField(max_length=255, label="Author")
+    price = forms.DecimalField(max_digits=6, decimal_places=2, label="Price")
+    quantity = forms.IntegerField(min_value=1, label="Quantity")
 
-#Credit
+# Credit
 class AssignCreditForm(forms.ModelForm):
     credit = forms.DecimalField(max_digits=10, decimal_places=2, label="Credit Amount")
 
     class Meta:
         model = UserProfile
         fields = ['credit']
+
+# Bulk Order
+class BulkOrderItemForm(forms.ModelForm):
+    class Meta:
+        model = BulkOrderItem
+        fields = ['title', 'author', 'price', 'quantity']
+
+BulkOrderItemFormSet = forms.formset_factory(BulkOrderItemForm, extra=3)
+
+
+# Bulk Order Receipt
+class BulkOrderReceiptForm(forms.ModelForm):
+    class Meta:
+        model = BulkOrderReceipt
+        fields = ['vendor_name']
+
+
+# Books Form
+class BookForm(forms.Form):
+    title = forms.CharField(max_length=200, label='Book Title')
+    author = forms.CharField(max_length=200, label='Author')
+    price = forms.DecimalField(max_digits=6, decimal_places=2, label='Price')
+    quantity = forms.IntegerField(min_value=1, label='Quantity')
