@@ -10,6 +10,7 @@ class Book(models.Model):
     author = models.CharField(max_length=200)
     price = models.FloatField()
     quantity = models.IntegerField()
+    vendor_name = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.title

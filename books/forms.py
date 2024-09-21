@@ -92,3 +92,4 @@ class BookForm(forms.Form):
     author = forms.CharField(max_length=200, label='Author')
     price = forms.DecimalField(max_digits=6, decimal_places=2, label='Price')
     quantity = forms.IntegerField(min_value=1, label='Quantity')
+    vendor_name = forms.CharField(max_length=255, label='Vendor') 

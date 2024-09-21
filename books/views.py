@@ -122,18 +122,36 @@ def add_book(request):
     if request.method == 'POST':
         form = BookForm(request.POST)
         if form.is_valid():
-            name = form.cleaned_data['title']
+            title = form.cleaned_data['title']
             author = form.cleaned_data['author']
             price = float(form.cleaned_data['price'])
             quantity = form.cleaned_data['quantity']
+            vendor_name = form.cleaned_data['vendor_name']  # Get vendor name
 
+            # Insert the book into MongoDB
             book = {
-                "title": name,
+                "title": title,
                 "author": author,
                 "price": price,
-                "quantity": quantity
+                "quantity": quantity,
+                "vendor_name": vendor_name
             }
             books_collection.insert_one(book)
+
+            # Create a corresponding BulkOrderReceipt in the database
+            bulk_order_receipt = BulkOrderReceipt.objects.create(
+                vendor_name=vendor_name,
+            )
+
+            # Create a BulkOrderItem linked to the receipt
+            BulkOrderItem.objects.create(
+                bulk_order=bulk_order_receipt,
+                title=title,
+                author=author,
+                price=Decimal(price),
+                quantity=quantity
+            )
+
             return redirect('manage_inventory')
 
     else:
@@ -392,7 +410,7 @@ def view_all_receipts(request):
     receipts = Receipt.objects.all().order_by('-purchase_date')
     return render(request, 'view_all_receipts.html', {'receipts': receipts})
 
-# Bulk order view
+
 # MongoDB connection
 from pymongo import MongoClient
 client = MongoClient("mongodb+srv://mongodbstudent1:t4aK6RZdC4QE3eM4@cluster0.6cclx.mongodb.net/")
@@ -400,6 +418,8 @@ db = client["DustyShelf"]
 books_collection = db["books"]
 
 # Bulk order view
+#@login_required
+#@user_passes_test(is_admin_or_employee)
 def bulk_order_books(request):
     BulkOrderFormSet = formset_factory(BulkOrderForm, extra=5)
 
@@ -443,6 +463,10 @@ def bulk_order_books(request):
 
     return render(request, 'bulk_order_books.html', {'formset': formset, 'receipt_form': receipt_form})
 
+
+# Bulk Order Receipts
+#@login_required
+#@user_passes_test(is_admin_or_employee)
 def bulk_order_receipts_view(request):
     receipts = BulkOrderReceipt.objects.prefetch_related('items').order_by('-order_date').all()  # Fetch related items for each receipt
     
