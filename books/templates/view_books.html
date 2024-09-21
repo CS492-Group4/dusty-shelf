@@ -9,13 +9,13 @@
     <h1>Books Collection</h1>
 
     <p><strong>Your Available Credit:</strong> ${{ current_credit }}</p>
-    <!-- Search form -->
+
     <form method="GET" action="{% url 'view_books' %}">
         <input type="text" name="search_term" placeholder="Search by title or author" value="{{ search_term }}">
         <button type="submit">Search</button>
     </form>
 
-    <!-- Display search results -->
+
     <ul>
         {% if books %}
             {% for book in books %}
@@ -36,7 +36,6 @@
         {% endif %}
     </ul>
 
-    <!-- Add a return link to the dashboard or home page -->
     <p>
         <a href="{% url 'dashboard' %}">Return to Dashboard</a>
     </p>

@@ -8,18 +8,18 @@
 <body>
     <h1>Search Users and Assign Credit</h1>
 
-    <!-- Search form -->
+
     <form method="GET" action="{% url 'search_users' %}">
         <label for="query">Search by Username or Email:</label>
         <input type="text" name="query" id="query" value="{{ query }}" placeholder="Enter username or email">
         <button type="submit">Search</button>
     </form>
 
-    <!-- Credit assignment form -->
+
     <form method="POST" action="{% url 'search_users' %}">
         {% csrf_token %}
         
-        <!-- Display user list with checkboxes -->
+
         <ul>
             {% for user in users %}
             <li>
@@ -32,7 +32,7 @@
             {% endfor %}
         </ul>
 
-        <!-- Credit input field -->
+
         <label for="credit_amount">Credit Amount to Assign:</label>
         <input type="number" name="credit_amount" id="credit_amount" step="0.01" required>
 

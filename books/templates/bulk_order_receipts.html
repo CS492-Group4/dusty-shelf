@@ -14,13 +14,13 @@
                     {{ item.title }} by {{ item.author }} - 
                     Quantity: {{ item.quantity }} - 
                     Price per unit: ${{ item.price|floatformat:2 }} - 
-                    Subtotal: ${{ item.subtotal|floatformat:2 }}  <!-- Show subtotal -->
+                    Subtotal: ${{ item.subtotal|floatformat:2 }}  
                 </li>
             {% empty %}
                 <li>No books ordered for this receipt.</li>
             {% endfor %}
         </ul>
-        <h4>Total Price: ${{ receipt.total_price|floatformat:2 }}</h4>  <!-- Show total price -->
+        <h4>Total Price: ${{ receipt.total_price|floatformat:2 }}</h4> 
     </div>
 {% empty %}
     <p>No bulk order receipts available.</p>

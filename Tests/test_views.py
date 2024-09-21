@@ -137,17 +137,17 @@ class TestBulkOrderBooksView(TestCase):
             'form-2-quantity': '',
         }
 
-        # Send a POST request to the bulk_order_books view
+       
         response = self.client.post(reverse('bulk_order_books'), data=form_data)
 
-        # Ensure the response redirects to the manage inventory page
+       
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('manage_inventory'))
 
-        # Check that insert_one was called twice (for 2 valid books)
+        
         self.assertEqual(mock_insert_one.call_count, 2)
 
-        # Verify the correct data was inserted for both books
+        
         mock_insert_one.assert_any_call({
             'title': 'Test Book 1',
             'author': 'Test Author 1',

@@ -430,10 +430,8 @@ def bulk_order_books(request):
                         quantity=quantity
                     )
 
-                    # Update total price
                     total_price += price * quantity
 
-            # After creating the items, update the total price in the receipt (if you store it)
             bulk_order_receipt.total_price = total_price
             bulk_order_receipt.save()
 
@@ -451,11 +449,11 @@ def bulk_order_receipts_view(request):
     receipt_data = []
     for receipt in receipts:
         # Calculate total price by summing price * quantity for each item
-        total_price = sum(Decimal(item.price.to_decimal()) * item.quantity for item in receipt.items.all())  # Convert Decimal128 to Decimal
+        total_price = sum(Decimal(item.price.to_decimal()) * item.quantity for item in receipt.items.all())
         receipt_data.append({
             'vendor_name': receipt.vendor_name,
             'order_date': receipt.order_date,
-            'items': receipt.items.all(),  # Retrieve related items for this receipt
+            'items': receipt.items.all(),
             'total_price': total_price
         })
     
