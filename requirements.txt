@@ -39,7 +39,7 @@ protobuf==4.25.3
 pubnub==7.4.3
 pycryptodomex==3.20.0
 Pygments==2.18.0
-pymongo==4.8.0
+pymongo==3.12.3
 python-dateutil==2.9.0.post0
 pytz==2024.1
 requests==2.31.0
