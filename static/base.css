@@ -1,0 +1,30 @@
+header {
+    display: block;
+    margin: auto;
+    text-align: center;
+}
+
+
+body {
+    background-image: url("book_bkgrnd.png");
+    padding: 20px;
+    background-size: cover;
+    background-position: center;
+    height: 500px;
+}
+
+footer {
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Customize links */
+a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}

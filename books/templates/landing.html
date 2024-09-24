@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,9 +11,14 @@
             padding: 0;
             font-family: Arial, sans-serif;
             height: 100vh;
-            background-image: url('static/background.png');
+            background-image: url('static/dusty-shelf/book_bkgrnd.png');
             background-size: cover;
             background-position: center;
+        }
+
+        .header {
+            display: flex;
+            justify-content: center;
         }
 
         .container {
@@ -24,18 +30,20 @@
 
         .content {
             text-align: center;
-            background-color: rgba(255, 255, 255, 0.8);
-            padding: 20px;
+            font-size: 15px;
+            padding: 5px;
             border-radius: 8px;
+            margin-top: -300px;
         }
 
         .content h1 {
-            margin-bottom: 20px;
+            margin-bottom: 40px;
             font-size: 3em;
+            color: #E2D3B4;
         }
 
         .login-button {
-            background-color: #3498db;
+            background-color: #755411;
             color: white;
             padding: 10px 20px;
             border: none;
@@ -51,6 +59,11 @@
     </style>
 </head>
 <body>
+    <header>
+        <div class="header">
+        <img src="static/dusty-shelf/logo.png" alt="Website Logo">
+        </div>
+    </header>    
     <div class="container">
         <div class="content">
             <h1>Welcome to Dusty Shelf</h1>
