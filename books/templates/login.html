@@ -1,4 +1,63 @@
-<h2>Login</h2>
+{% load static %}
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        background-image: url({% static 'dusty-shelf/back2.png' %});
+        background-size: cover;
+        background-position: center;
+    }
+
+    .header {
+        display: flex;
+        justify-content: center;
+    }
+
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    .content {
+        text-align: center;
+        font-size: 15px;
+        padding: 5px;
+        border-radius: 8px;
+        margin-top: -300px;
+        color: #B7AA8B;
+    }
+
+    .content h1 {
+        margin-bottom: 40px;
+        font-size: 3em;
+        color: #B7AA8B;
+    }
+
+    button {
+        background-color: #867E65;
+        color: #545244;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 1.2em;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #424033;
+    }
+</style>
+
+<div class="container">
+    <div class="content">
+
+<h1>Login</h1>
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
@@ -9,3 +68,6 @@
 <a href="{% url 'register' %}">
     <button type="button">Register</button>
 </a>
+
+</div>
+</div>
