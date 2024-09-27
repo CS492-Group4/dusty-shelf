@@ -41,6 +41,7 @@ This is a Django-based application for managing bookstore inventory, sales, and 
 	Superuser: Superuser
 	password: 1password1
 
-6. Running python manage.py test requires placing # infront of all the requirements:
-   @login_required
-   @user_passes_test
+6. Running python manage.py test requires deleting the old testcustomer
+   unless new user name is created for the test_views.py under
+   #Test create customer
+ 

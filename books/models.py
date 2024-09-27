@@ -47,6 +47,7 @@ class BulkOrderReceipt(models.Model):
     vendor_name = models.CharField(max_length=255)
     order_date = models.DateTimeField(auto_now_add=True)
 
+# Model for Bulk orders
 class BulkOrderItem(models.Model):
     id = models.CharField(primary_key=True, max_length=24, default=lambda: str(ObjectId()))  # Use ObjectId as id
     bulk_order = models.ForeignKey(BulkOrderReceipt, related_name='items', on_delete=models.CASCADE)

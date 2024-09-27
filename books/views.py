@@ -48,7 +48,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 
 # Dashboard
-#@login_required
+@login_required
 def user_dashboard(request):
     user_profile, created = UserProfile.objects.get_or_create(user=request.user, defaults={'credit': '0.00'})
     
@@ -66,8 +66,8 @@ def user_dashboard(request):
 
 
 # Manage Inventory View
-#@login_required
-#@user_passes_test(is_admin_or_employee)
+@login_required
+@user_passes_test(is_admin_or_employee)
 def manage_inventory(request):
     # Fetch all books from MongoDB
     books = list(books_collection.find())
@@ -78,8 +78,8 @@ def manage_inventory(request):
     return render(request, 'manage_inventory.html', {'books': books})
 
 #Edit Book View
-#@login_required
-#@user_passes_test(is_admin_or_employee)
+@login_required
+@user_passes_test(is_admin_or_employee)
 def edit_book(request, book_id):
     book = books_collection.find_one({"_id": ObjectId(book_id)})
     
@@ -109,15 +109,15 @@ def edit_book(request, book_id):
     return render(request, 'edit_book.html', {'form': form, 'book_id': book_id})
 
 #Delete Book View
-#@login_required
-#@user_passes_test(is_admin_or_employee)
+@login_required
+@user_passes_test(is_admin_or_employee)
 def delete_book(request, book_id):
     books_collection.delete_one({"_id": ObjectId(book_id)})
     return redirect('manage_inventory')
 
 # Add book view page
-#@login_required
-#@user_passes_test(is_admin_or_employee)
+@login_required
+@user_passes_test(is_admin_or_employee)
 def add_book(request):
     if request.method == 'POST':
         form = BookForm(request.POST)
@@ -126,7 +126,7 @@ def add_book(request):
             author = form.cleaned_data['author']
             price = float(form.cleaned_data['price'])
             quantity = form.cleaned_data['quantity']
-            vendor_name = form.cleaned_data['vendor_name']  # Get vendor name
+            vendor_name = form.cleaned_data['vendor_name']
 
             # Insert the book into MongoDB
             book = {
@@ -205,7 +205,7 @@ def search_books(request):
         return HttpResponse(result_str)
     
 # Purchase Books    
-#@login_required
+@login_required
 def purchase_book(request, book_id):
     book = books_collection.find_one({"_id": ObjectId(book_id)})
     user_profile = get_object_or_404(UserProfile, user=request.user)
@@ -253,7 +253,7 @@ def purchase_book(request, book_id):
     return redirect('view_books')
 
 # Customer Personal Library
-#@login_required
+@login_required
 def view_personal_library(request):
     user_id = str(request.user.id)
     personal_books = list(personal_library_collection.find({"user_id": user_id}))
@@ -281,8 +281,8 @@ def register_customer(request):
     return render(request, 'register.html', {'form': form})
 
 # Create an employee
-#@login_required
-#@user_passes_test(is_admin_or_employee)
+@login_required
+@user_passes_test(is_admin_or_employee)
 def create_employee(request):
     if request.method == 'POST':
         form = EmployeeCreationForm(request.POST)
@@ -302,8 +302,8 @@ def create_employee(request):
 
 
 # Create an admin
-#@login_required
-#@user_passes_test(is_admin)
+@login_required
+@user_passes_test(is_admin)
 def create_admin(request):
     if request.method == 'POST':
         form = AdminCreationForm(request.POST)
@@ -350,8 +350,8 @@ def custom_login(request):
     return render(request, 'login.html')
 
 #Assign Credit
-#@login_required
-#@user_passes_test(is_admin)
+@login_required
+@user_passes_test(is_admin)
 def assign_credit(request, user_id):
     user = get_object_or_404(User, pk=user_id)
     user_profile = get_object_or_404(UserProfile, user=user)
@@ -381,8 +381,8 @@ def assign_credit(request, user_id):
 #User Search for Credit
 from django.contrib.auth.models import User
 
-#@login_required
-#@user_passes_test(is_admin)  # Only admins can search users
+@login_required
+@user_passes_test(is_admin)  # Only admins can search users
 def search_users(request):
     query = request.GET.get('query', '') 
 
@@ -404,8 +404,8 @@ def search_users(request):
 
     return render(request, 'search_users.html', {'users': users, 'query': query})
 
-#@login_required
-#@user_passes_test(is_admin_or_employee)
+@login_required
+@user_passes_test(is_admin_or_employee)
 def view_all_receipts(request):
     receipts = Receipt.objects.all().order_by('-purchase_date')
     return render(request, 'view_all_receipts.html', {'receipts': receipts})
@@ -418,8 +418,8 @@ db = client["DustyShelf"]
 books_collection = db["books"]
 
 # Bulk order view
-#@login_required
-#@user_passes_test(is_admin_or_employee)
+@login_required
+@user_passes_test(is_admin_or_employee)
 def bulk_order_books(request):
     BulkOrderFormSet = formset_factory(BulkOrderForm, extra=5)
 
@@ -456,6 +456,10 @@ def bulk_order_books(request):
             bulk_order_receipt.save()
 
             return redirect('manage_inventory')  # Redirect after adding books
+        else:
+            # Log formset and receipt form errors for debugging
+            print("Formset errors:", formset.errors)
+            print("Receipt form errors:", receipt_form.errors)
 
     else:
         formset = BulkOrderFormSet()
@@ -465,8 +469,8 @@ def bulk_order_books(request):
 
 
 # Bulk Order Receipts
-#@login_required
-#@user_passes_test(is_admin_or_employee)
+@login_required
+@user_passes_test(is_admin_or_employee)
 def bulk_order_receipts_view(request):
     receipts = BulkOrderReceipt.objects.prefetch_related('items').order_by('-order_date').all()  # Fetch related items for each receipt
     
