@@ -1,3 +1,29 @@
+{% load static %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">   
+
+    <title>Dusty Shelf</title>
+    <link rel="stylesheet" type="text/css" href="{% static "dusty-shelf/base.css" %}">
+</head>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        background-image: url({% static 'dusty-shelf/back2.png' %});
+        background-size: cover;
+        background-position: center;
+    }
+</style>
+   
+
+<div class="container">
+    <div class="content">
+
 <h2>Edit Book</h2>
 
 <form method="post">
@@ -5,3 +31,6 @@
     {{ form.as_p }}
     <button type="submit">Save Changes</button>
 </form>
+
+</div>
+</div>

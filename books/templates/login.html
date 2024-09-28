@@ -1,5 +1,13 @@
 {% load static %}
 
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">   
+
+    <title>Dusty Shelf</title>
+    <link rel="stylesheet" type="text/css" href="{% static "dusty-shelf/base.css" %}">
+</head>
+
 <style>
     body {
         margin: 0;
@@ -10,49 +18,8 @@
         background-size: cover;
         background-position: center;
     }
-
-    .header {
-        display: flex;
-        justify-content: center;
-    }
-
-    .container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-    }
-
-    .content {
-        text-align: center;
-        font-size: 15px;
-        padding: 5px;
-        border-radius: 8px;
-        margin-top: -300px;
-        color: #B7AA8B;
-    }
-
-    .content h1 {
-        margin-bottom: 40px;
-        font-size: 3em;
-        color: #B7AA8B;
-    }
-
-    button {
-        background-color: #867E65;
-        color: #545244;
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        text-decoration: none;
-        font-size: 1.2em;
-        cursor: pointer;
-    }
-
-    button:hover {
-        background-color: #424033;
-    }
 </style>
+   
 
 <div class="container">
     <div class="content">
