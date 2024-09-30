@@ -28,12 +28,12 @@
 <p><strong>Your Available Credit:</strong> ${{ credit }}</p>
 {% if is_admin %}
 <h3>Browse our collection and make purchases!</h3>
-    <ul>    
+    <ul style="list-style-type:none;">    
         <li><a href="{% url 'view_books' %}">View All Books</a></li>
         <li><a href="{% url 'personal_library' %}">View Your Collection</a></li>
     </ul>
 <h3>Admin Options</h3>
-<ul>
+<ul style="list-style-type:none;">
     <li><a href="{% url 'manage_inventory' %}">Manage Inventory</a></li>
     <li><a href="{% url 'add_book' %}">Add New Book</a></li>
     <li><a href="{% url 'create_employee' %}">Create Employee</a></li>
@@ -44,12 +44,12 @@
     <li><a href="{% url 'bulk_order_receipts' %}" class="btn btn-primary">View Bulk Order Receipts</a></li>
 {% elif is_employee %}
 <h3>Browse our collection and make purchases!</h3>
-    <ul>    
+    <ul style="list-style-type:none;">    
         <li><a href="{% url 'view_books' %}">View All Books</a></li>
         <li><a href="{% url 'personal_library' %}">View Your Collection</a></li>
     </ul>
     <h3>Employee Options</h3>
-    <ul>
+    <ul style="list-style-type:none;">
         <li><a href="{% url 'manage_inventory' %}">Manage Inventory</a></li>
         <li><a href="{% url 'add_book' %}">Add New Book</a></li>
         <li><a href="{% url 'view_all_receipts' %}">View All Receipts</a></li>
@@ -58,7 +58,7 @@
 
 {% else %}
     <h3>Browse our collection and make purchases!</h3>
-    <ul>    
+    <ul style="list-style-type:none;">    
         <li><a href="{% url 'view_books' %}">View All Books</a></li>
         <li><a href="{% url 'personal_library' %}">View Your Collection</a></li>
     </ul>

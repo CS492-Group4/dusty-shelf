@@ -1,25 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
+<style>
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr); 
+        gap: 15px;
+      }
+      
+    .grid-item {
+        padding: 10px;
+        text-align: center;
+      }
+
+    body {
+        margin: 20px;
+        padding-top: 200px;
+        padding-bottom: 600px;
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        background-image: url({% static 'dusty-shelf/back2.png' %});
+        background-size: cover;
+        background-position: center;
+    }   
+ 
+</style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>All Books</title>
+    <link rel="stylesheet" type="text/css" href="{% static "dusty-shelf/base.css" %}">
 </head>
-<body>
+
+
+<div class="header">
+    <div class="content">
     <h1>Books Collection</h1>
-
+    </div>
+</div>
+    
+<div class="header">
     <p><strong>Your Available Credit:</strong> ${{ current_credit }}</p>
+</div>
 
+<div class="header">
     <form method="GET" action="{% url 'view_books' %}">
-        <input type="text" name="search_term" placeholder="Search by title or author" value="{{ search_term }}">
-        <button type="submit">Search</button>
+    <input type="text" name="search_term" placeholder="Search by title or author" value="{{ search_term }}">
+    <button type="submit">Search</button>
     </form>
-
-
-    <ul>
+</div>
+    
+    <body>
+    <ul style="list-style-type:none;">
         {% if books %}
+            <div class="grid-container">
             {% for book in books %}
-            <li>
+            <li class="grid-item">
                 <strong>{{ book.title }}</strong><br>
                 Author: {{ book.author }}<br>
                 Price: ${{ book.price }}<br>
@@ -31,6 +68,7 @@
             </li>
             <hr>
             {% endfor %}
+        </div>
         {% else %}
             <p>No books found matching your search.</p>
         {% endif %}
@@ -39,5 +77,7 @@
     <p>
         <a href="{% url 'dashboard' %}">Return to Dashboard</a>
     </p>
+
 </body>
+
 </html>

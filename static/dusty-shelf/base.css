@@ -1,6 +1,8 @@
 .header {
     display: flex;
+    text-align: center;
     justify-content: center;
+    padding-bottom: 10px;
 }
 
 .container {
@@ -15,15 +17,17 @@
     font-size: 15px;
     padding: 5px;
     border-radius: 8px;
-    margin-top: -300px;
+    margin-top: 30px;
     color: #B7AA8B;
 }
+
 
 .content h1 {
     margin-bottom: 40px;
     font-size: 3em;
     color: #B7AA8B;
 }
+
 
 button {
     background-color: #867E65;

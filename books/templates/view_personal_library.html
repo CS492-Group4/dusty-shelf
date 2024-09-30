@@ -1,15 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
+
+<style>
+   
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr); 
+        gap: 15px;
+      }
+      
+    .grid-item {
+        padding: 10px;
+        text-align: center;
+      }
+    
+      body {
+        margin: 20px;
+        padding-top: 200px;
+        padding-bottom: 600px;
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        background-image: url({% static 'dusty-shelf/back2.png' %});
+        background-size: cover;
+        background-position: center;
+    }
+
+   
+ 
+</style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Library</title>
+    <link rel="stylesheet" type="text/css" href="{% static "dusty-shelf/base.css" %}">
 </head>
-<body>
-    <h1>Your Personal Library</h1>
 
+    <div class="header">
+    <h1>Your Personal Library</h1>
+    </div>
+    <body>
     {% if books %}
-        <ul>
+        <ul style="list-style-type:none;">
+            <div class="grid-container">
             {% for book in books %}
             <li>
                 <strong>{{ book.title }}</strong><br>
@@ -18,6 +51,7 @@
             </li>
             <hr>
             {% endfor %}
+            </div>
         </ul>
     {% else %}
         <p>You have no books in your library.</p>
