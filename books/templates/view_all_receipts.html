@@ -1,12 +1,46 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purchase Receipts</title>
+    <link rel="stylesheet" type="text/css" href="{% static "dusty-shelf/base.css" %}">
 </head>
-<body>
+
+
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 15px;
+          }
+          
+        .grid-item {
+            padding: 10px;
+            text-align: center;
+          }
+    
+        body {
+            margin: 20px;
+            padding-top: 200px;
+            padding-bottom: 600px;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            background-image: url({% static 'dusty-shelf/back2.png' %});
+            background-size: cover;
+            background-position: center;
+        }   
+     
+    </style>
+    
+    <div class="content">
+
+    <div class="header">
     <h1>All Purchase Receipts</h1>
+    </div>
+    <body>
+    </div>
     <table>
         <thead>
             <tr>
@@ -29,6 +63,11 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+</div>
 </body>
+<div class="content">
+    <a href="{% url 'dashboard' %}">Back to Dashboard</a>
+
+</div>
+
 </html>

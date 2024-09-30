@@ -1,26 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
+    {% load static %}
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 15px;
+          }
+          
+        .grid-item {
+            padding: 10px;
+            text-align: center;
+          }
+    
+        body {
+            margin: 20px;
+            padding-top: 200px;
+            padding-bottom: 600px;
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            background-image: url({% static 'dusty-shelf/back2.png' %});
+            background-size: cover;
+            background-position: center;
+        }   
+     
+    </style>
+    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Users</title>
+    <link rel="stylesheet" type="text/css" href="{% static "dusty-shelf/base.css" %}">
 </head>
 <body>
+    <div class="header">
     <h1>Search Users and Assign Credit</h1>
-
-
-    <form method="GET" action="{% url 'search_users' %}">
+    </div>
+<div class="header">
+        <form method="GET" action="{% url 'search_users' %}">
         <label for="query">Search by Username or Email:</label>
         <input type="text" name="query" id="query" value="{{ query }}" placeholder="Enter username or email">
         <button type="submit">Search</button>
     </form>
-
+</div>
+</div>
 
     <form method="POST" action="{% url 'search_users' %}">
         {% csrf_token %}
         
 
-        <ul>
+        <ul style="list-style-type:none;">
+            <div class="grid-container">
             {% for user in users %}
             <li>
                 <input type="checkbox" name="selected_users" value="{{ user.id }}">
@@ -30,9 +60,10 @@
             </li>
             <hr>
             {% endfor %}
+        </div>
         </ul>
 
-
+<div class="content">
         <label for="credit_amount">Credit Amount to Assign:</label>
         <input type="number" name="credit_amount" id="credit_amount" step="0.01" required>
 
@@ -40,5 +71,6 @@
     </form>
 
     <p><a href="{% url 'dashboard' %}">Return to Dashboard</a></p>
+</div>
 </body>
 </html>

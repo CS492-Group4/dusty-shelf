@@ -13,6 +13,7 @@
 }
 
 .content {
+    justify-content: center;
     text-align: center;
     font-size: 15px;
     padding: 5px;

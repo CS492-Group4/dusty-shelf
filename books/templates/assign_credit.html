@@ -1,14 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load static %}
+
+<style>
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr); 
+        gap: 15px;
+      }
+      
+    .grid-item {
+        padding: 10px;
+        text-align: center;
+      }
+
+    body {
+        margin: 20px;
+        padding-top: 200px;
+        padding-bottom: 600px;
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        background-image: url({% static 'dusty-shelf/back2.png' %});
+        background-size: cover;
+        background-position: center;
+    }   
+ 
+</style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assign Credit to {{ user.username }}</title>
+    <link rel="stylesheet" type="text/css" href="{% static "dusty-shelf/base.css" %}">
 </head>
 <body>
     <h1>Assign Credit to {{ user.username }}</h1>
     <p>Current Credit: {{ user_profile.credit }}</p>
-
+    
     <form method="POST">
         {% csrf_token %}
         <label for="credit">Enter Credit Amount to Add:</label>
