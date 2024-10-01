@@ -1,14 +1,57 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<style>
+  
+    h1 {
+        justify-content: center;
+        
+    }
+    body {
+        margin: 20px;
+        padding-top: 200px;
+        padding-bottom: 600px;
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        background-image: url({% static 'dusty-shelf/back3.png' %});
+        background-size: cover;
+        background-position: center;
+    }   
+    </style>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>All Books</title>
+        <link rel="stylesheet" type="text/css" href="{% static "dusty-shelf/base.css" %}">
+    </head>
+<body>
+    <div class="header">
+        <nav>
+            <ul style="list-style-type:none;">
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li><a href="{% url 'view_books' %}">Books</a></li>
+                <li><a href="{% url 'personal_library' %}">My Library</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+        </nav>
+    </div>
+    
 
-{% block content %}
+    <div class="content">
 <h1>Bulk Order Receipts</h1>
+    </div>
+
 
 {% for receipt in receipt_data %}
+
+
     <div class="receipt">
+        <div class="content">
+          
         <h3>Vendor: {{ receipt.vendor_name }}</h3>
         <p>Order Date: {{ receipt.order_date|date:"F d, Y, g:i a" }}</p>
         <h4>Books Ordered:</h4>
-        <ul>
+        <ul style="list-style-type:none;">
             {% for item in receipt.items %}
                 <li>
                     {{ item.title }} by {{ item.author }} - 
@@ -16,14 +59,21 @@
                     Price per unit: ${{ item.price|floatformat:2 }} - 
                     Subtotal: ${{ item.subtotal|floatformat:2 }}  
                 </li>
+            
+        
             {% empty %}
                 <li>No books ordered for this receipt.</li>
             {% endfor %}
         </ul>
+    
         <h4>Total Price: ${{ receipt.total_price|floatformat:2 }}</h4> 
     </div>
+</div>
+
+
 {% empty %}
     <p>No bulk order receipts available.</p>
 {% endfor %}
 
-{% endblock %}
+</body>
+</html>

@@ -1,4 +1,29 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>All Books</title>
+        <link rel="stylesheet" type="text/css" href="{% static "dusty-shelf/base.css" %}">
+    </head>
+    <style>
+    body {
+        margin: 20px;
+        padding-top: 200px;
+        padding-bottom: 600px;
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        background-image: url({% static 'dusty-shelf/back2.png' %});
+        background-size: cover;
+        background-position: center;
+    }   
+</style>
+
+<div class="header">
 <h2>Manage Inventory</h2>
+</div>
+
 
 <table border="1">
     <thead>
@@ -25,8 +50,10 @@
         {% endfor %}
     </tbody>
 </table>
-
+<div class="content">
 <a href="{% url 'add_book' %}">Add New Book</a>
 <p>
     <a href="{% url 'dashboard' %}">Return to Dashboard</a>
 </p>
+</div>
+</html>

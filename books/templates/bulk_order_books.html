@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 
 {% block content %}
+<style>
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); 
+    gap: 15px;
+  }
+  
+.grid-item {
+    padding: 10px;
+    text-align: center;
+  }
+</style>
 <h1>Bulk Order Books</h1>
 
 <form method="post">
@@ -11,14 +23,14 @@
 
     <h2>Books</h2>
     {{ formset.management_form }}
-
+<div class="grid-container">
     {% for form in formset %}
         <div class="book-form">
             <h3>Book {{ forloop.counter }}</h3>
             {{ form.as_p }}
         </div>
     {% endfor %}
-
+    </div>
     <button type="submit">Submit Bulk Order</button>
 </form>
 {% endblock %}
